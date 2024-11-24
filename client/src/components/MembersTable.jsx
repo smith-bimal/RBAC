@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-const MembersTable = ({ members, itemsPerPage }) => {
+const MembersTable = ({ members, itemsPerPage, handleEditClick, setEditMember }) => {
     return (
         <table className="w-full text-sm">
             <thead className="text-slate-500 mb-4">
@@ -20,7 +20,7 @@ const MembersTable = ({ members, itemsPerPage }) => {
                             <td>{member.userId}</td>
                             <td>
                                 <div className="flex items-center">
-                                    <img src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg" alt="" className="h-10 w-10 rounded-full object-cover mr-4"/>
+                                    <img src="https://static.vecteezy.com/system/resources/previews/009/292/244/non_2x/default-avatar-icon-of-social-media-user-vector.jpg" alt="" className="h-10 w-10 rounded-full object-cover mr-4" />
                                     <div>
                                         <p>{member.name}</p>
                                         <p className="font-normal text-slate-500">{member.email}</p>
@@ -37,8 +37,18 @@ const MembersTable = ({ members, itemsPerPage }) => {
                             <td>{member.createdOn}</td>
                             <td className="cursor-pointer p-2 w-fit">
                                 <div className="flex items-center justify-center">
-                                    <p className=" ps-3 pr-4 py-2 cursor-pointer hover:bg-indigo-100 text-indigo-500 rounded-lg my-1 transition-all"><i className="ri-edit-line mr-2"></i>Edit</p>
-                                    <p className="ps-3 pr-4 py-2 cursor-pointer hover:bg-red-100 text-red-500 rounded-lg my-1 transition-all"><i className="ri-delete-bin-6-line mr-2"></i>Delete</p>
+                                    <button
+                                        className="ps-3 pr-4 py-2 cursor-pointer hover:bg-indigo-100 text-indigo-500 rounded-lg my-1 transition-all"
+                                        onClick={()=>{
+                                            handleEditClick();
+                                            setEditMember(member);
+                                        }}  
+                                    >
+                                        <i className="ri-edit-line mr-2"></i>Edit
+                                    </button>
+                                    <button className="ps-3 pr-4 py-2 cursor-pointer hover:bg-red-100 text-red-500 rounded-lg my-1 transition-all">
+                                        <i className="ri-delete-bin-6-line mr-2"></i>Delete
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -49,4 +59,4 @@ const MembersTable = ({ members, itemsPerPage }) => {
     )
 }
 
-export default MembersTable
+export default MembersTable;

@@ -1,9 +1,10 @@
 import { useState } from "react";
-import FilterSearch from "./FilterSearch"
-import MembersTable from "./MembersTable"
-import Pagination from "./Pagination"
-import Card from "./UI/Card"
-
+import FilterSearch from "./FilterSearch";
+import MembersTable from "./MembersTable";
+import Pagination from "./Pagination";
+import Card from "./UI/Card";
+import EditDrawer from "./EditDrawer";
+import EditForm from "./EditForm";
 
 const members = [
     { userId: "A12345", name: "John Doe", email: "John.Doe@example.com", role: "Admin", status: "Active", permissions: "Full Access", createdOn: "23-11-2024" },
@@ -40,18 +41,28 @@ const members = [
 
 const Members = () => {
     const [filteredMembers, setFilteredMembers] = useState(members);
+    const [editMember, setEditMember] = useState({});
     const [itemsPerPage, setItemsPerPage] = useState(10);
     const [pageNumber, setPageNumber] = useState(1);
+    const [drawerOpen, setDrawerOpen] = useState(false);
 
     const lastMemberIndex = itemsPerPage * pageNumber;
     const firstMemberIndex = lastMemberIndex - itemsPerPage;
     const currentMembers = filteredMembers.slice(firstMemberIndex, lastMemberIndex);
 
+    const toggleDrawer = (open) => () => {
+        setDrawerOpen(open);
+    };
+
+    const handleEditClick = () => {
+        toggleDrawer(true)();
+    };
+
     return (
         <div className="p-8 font-medium w-full h-full overflow-auto">
             <div className="flex items-center justify-between mb-4 flex-wrap whitespace-nowrap gap-4">
-                <h1 className="text-2xl font-semibold">Members ({filteredMembers.length})</h1>
-                <div className=" px-6 py-2 bg-indigo-500 border border-indigo-500 rounded-lg text-white cursor-pointer">Add member</div>
+                <h1 className="text-2xl font-semibold">Members ({members.length})</h1>
+                <div className="px-6 py-2 bg-indigo-500 border border-indigo-500 rounded-lg text-white cursor-pointer">Add member</div>
             </div>
 
             <Card>
@@ -62,7 +73,12 @@ const Members = () => {
                     itemsPerPage={itemsPerPage}
                     setItemsPerPage={setItemsPerPage}
                 />
-                <MembersTable members={currentMembers} itemsPerPage={itemsPerPage} />
+                <MembersTable
+                    members={currentMembers}
+                    itemsPerPage={itemsPerPage}
+                    handleEditClick={handleEditClick}
+                    setEditMember={setEditMember}
+                />
                 <Pagination
                     itemsPerPage={itemsPerPage}
                     pageNumber={pageNumber}
@@ -70,8 +86,15 @@ const Members = () => {
                     length={filteredMembers.length}
                 />
             </Card>
+
+            {/* Pass drawerOpen state and toggleDrawer function */}
+            <EditDrawer open={drawerOpen} toggleDrawer={toggleDrawer}>
+                {/* Content of the drawer */}
+                <EditForm editMember={editMember} setDrawerOpen={setDrawerOpen}/>
+                {/* Add your edit form here */}
+            </EditDrawer>
         </div>
     );
 };
 
-export default Members
+export default Members;
