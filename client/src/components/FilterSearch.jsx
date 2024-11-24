@@ -1,33 +1,32 @@
 /* eslint-disable react/prop-types */
 import { useState } from "react";
 
-const FilterSearch = ({ members, setMembers, itemsPerPage, setItemsPerPage }) => {
+const FilterSearch = ({ members, setFilteredMembers, filteredMembers, itemsPerPage, setItemsPerPage }) => {
     const [searchQuery, setSearchQuery] = useState('');
 
     const sortAtoZ = () => {
-        const sortedMembers = [...members].sort((a, b) => a.name.localeCompare(b.name));
-        setMembers(sortedMembers);
+        const sortedMembers = [...filteredMembers].sort((a, b) => a.name.localeCompare(b.name));
+        setFilteredMembers(sortedMembers);
     };
 
     const sortZtoA = () => {
-        const sortedMembers = [...members].sort((a, b) => b.name.localeCompare(a.name));
-        setMembers(sortedMembers);
+        const sortedMembers = [...filteredMembers].sort((a, b) => b.name.localeCompare(a.name));
+        setFilteredMembers(sortedMembers);
     };
 
-    // Convert date to parsedDate
     const parseDate = (dateStr) => {
         const [day, month, year] = dateStr.split('-');
         return new Date(`${year}-${month}-${day}`);
     };
 
     const sortNewtoOld = () => {
-        const sortedMembers = [...members].sort((a, b) => parseDate(b.createdOn) - parseDate(a.createdOn));  // Newest first
-        setMembers(sortedMembers);
+        const sortedMembers = [...filteredMembers].sort((a, b) => parseDate(b.createdOn) - parseDate(a.createdOn)); // Newest first
+        setFilteredMembers(sortedMembers);
     };
-    
+
     const sortOldtoNew = () => {
-        const sortedMembers = [...members].sort((a, b) => parseDate(a.createdOn) - parseDate(b.createdOn));  // Oldest first
-        setMembers(sortedMembers);
+        const sortedMembers = [...filteredMembers].sort((a, b) => parseDate(a.createdOn) - parseDate(b.createdOn)); // Oldest first
+        setFilteredMembers(sortedMembers);
     };
 
     const handleSortChange = (e) => {
@@ -42,13 +41,13 @@ const FilterSearch = ({ members, setMembers, itemsPerPage, setItemsPerPage }) =>
             sortOldtoNew();
         }
     };
-    
+
     const handleSearch = (e) => {
         setSearchQuery(e.target.value);
-        const filteredMembers = members.filter(member =>
+        let filteredMembers = members.filter(member =>
             member.name.toLowerCase().includes(e.target.value.toLowerCase())
         );
-        setMembers(filteredMembers);
+        setFilteredMembers(filteredMembers);
     };
 
     return (
@@ -58,13 +57,13 @@ const FilterSearch = ({ members, setMembers, itemsPerPage, setItemsPerPage }) =>
                     <input
                         type="text"
                         className="bg-slate-200 pl-9 pr-4 py-2 outline-none rounded-lg font-semibold text-slate-500"
-                        placeholder="Search"
+                        placeholder="Search name"
                         value={searchQuery}
                         onChange={handleSearch}
                     />
                     <i className="ri-search-line absolute text-xl left-2 top-1/2 -translate-y-1/2 text-slate-500"></i>
                 </div>
-                
+
                 <select
                     className="bg-slate-200 px-4 py-2 outline-none rounded-lg font-semibold text-slate-500"
                     defaultValue="3"
