@@ -1,17 +1,15 @@
-import Members from "./components/Members";
-import Navbar from "./components/Navbar";
-import Sidebar from "./components/Sidebar";
+import { BrowserRouter, Routes, Route } from "react-router";
+import Dashboard from "./pages/Dashboard";
+import Signin from "./pages/Signin";
 
 function App() {
-
   return (
-    <main className="overflow-hidden">
-      <Navbar />
-      <div className="flex h-[calc(100vh-80px)] bg-slate-100">
-        <Sidebar />
-        <Members />
-      </div>
-    </main>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Signin />} />
+        <Route path="/members" element={<Dashboard />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
