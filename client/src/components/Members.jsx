@@ -45,7 +45,7 @@ const Members = () => {
     }, [editMember, addMemberDrawerOpen, modalOpen]);
 
     return (
-        <div className="p-8 font-medium w-full h-full overflow-auto">
+        <div className="p-4 md:p-8 font-medium w-full h-full overflow-auto ">
             <div className="flex items-center justify-between mb-4 flex-wrap whitespace-nowrap gap-4">
                 <h1 className="text-2xl font-semibold">Members ({members.length})</h1>
                 <div

@@ -1,10 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Sidebar = () => {
     const [isVisible, setIsVisible] = useState(true);
 
+    useEffect(() => {
+        if (window.innerWidth < 768) {
+            setIsVisible(false);
+        }
+    }, [])
+
     return (
-        <div className="relative h-full">
+        <div className="absolute md:relative border-r shadow-xl z-20 h-[calc(100%-80px)] md:h-full">
             {isVisible && (<div className="p-6 pt-10 font-medium flex flex-col justify-start gap-6 bg-white h-full w-60">
                 <p className="px-4 py-2 rounded-lg hover:text-indigo-500 cursor-pointer transition-all"><i className="mr-2 text-xl ri-dashboard-horizontal-fill"></i> Dashboard</p>
                 <p className="px-4 py-2 rounded-lg hover:text-indigo-500 cursor-pointer transition-all"><i className="mr-2 text-xl ri-group-2-fill"></i> Integration</p>
