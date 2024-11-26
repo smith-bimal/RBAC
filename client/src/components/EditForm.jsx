@@ -2,6 +2,7 @@
 /* eslint-disable react/prop-types */
 import { useFormik } from "formik";
 import { useEffect } from "react";
+import apiRequest from "../lib/apiRequest";
 
 const validate = (values) => {
     const errors = {};
@@ -37,7 +38,7 @@ const validate = (values) => {
     return errors;
 };
 
-const EditForm = ({ editMember, setDrawerOpen }) => {
+const EditForm = ({ editMember, setEditMember, setDrawerOpen }) => {
     const formik = useFormik({
         initialValues: {
             name: editMember.name || '',
@@ -54,8 +55,15 @@ const EditForm = ({ editMember, setDrawerOpen }) => {
         },
         validate,
         onSubmit: (values) => {
-            //TODO: send to backend
-            console.log(values);
+            apiRequest.put(`members/${values.email}`, values)
+                .then((response) => {
+                    console.log(response);
+                }).catch((err) => {
+                    console.log(err);
+                }).finally(() => {
+                    setDrawerOpen(false);
+                    setEditMember({});
+                })
         },
     });
 
@@ -142,7 +150,7 @@ const EditForm = ({ editMember, setDrawerOpen }) => {
                             value={formik.values.status}
                             onChange={formik.handleChange}>
                             <option value="active">Active</option>
-                            <option value="inactive" onSelect={(e) => handleSelect(e.target.value)}>Inactive</option>
+                            <option value="inactive">Inactive</option>
                         </select>
                         {formik.errors.status ? <div className="text-red-500">{formik.errors.status}</div> : null}
                     </div>

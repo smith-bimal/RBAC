@@ -1,19 +1,6 @@
 /* eslint-disable react/prop-types */
-import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
 import { useFormik } from 'formik';
-
-const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    borderRadius: "0.8rem",
-    bgcolor: 'background.paper',
-    boxShadow: 24,
-    p: 4,
-    outline: "none",
-};
+import apiRequest from '../lib/apiRequest';
 
 const validate = (values) => {
     const errors = {};
@@ -49,131 +36,134 @@ const validate = (values) => {
     return errors;
 };
 
-export default function AddMember({ open, toggleModal }) {
+export default function AddMember({ toggleModal, addMember }) {
     const formik = useFormik({
         initialValues: {
             name: '',
             email: '',
-            role: 'admin',
+            role: 'viewer',
             status: 'active',
             permissions: {
                 create: false,
                 manage: false,
                 edit: false,
-                view: false,
+                view: true,
                 remove: false,
             },
         },
         validate,
         onSubmit: (values) => {
-            //TODO: Send to backend
-            console.log(values);
+            apiRequest.post("members", values)
+                .then(response => {
+                    // Call the addMember function passed from the parent component
+                    addMember(response.data);  // Assuming the API response contains the new member object
+                    console.log(response);
+                })
+                .catch(err => {
+                    console.log(err);
+                })
+                .finally(() => {
+                    toggleModal(false);
+                });
         },
     });
 
     return (
         <div>
-            <Modal
-                open={open}
-                onClose={() => toggleModal(false)}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-            >
-                <Box sx={style} width={{xs:"100%", sm:"50%"}}>
-                    <form onSubmit={formik.handleSubmit}>
-                        <h1 className="text-2xl font-semibold">Add a new member</h1>
-                        <div className="grid">
-                            <div>
-                                <label htmlFor="name" className="leading-9 block font-normal">Full Name</label>
-                                <input
-                                    type="text"
-                                    id="name"
-                                    name="name"
-                                    placeholder="Enter name"
-                                    className="bg-slate-100 border p-2 outline-none rounded-lg w-full"
-                                    value={formik.values.name}
-                                    onChange={formik.handleChange} />
-                                {formik.errors.name ? <div className="text-red-500">{formik.errors.name}</div> : null}
-                            </div>
+            <form onSubmit={formik.handleSubmit} className="p-6 font-semibold sm:w-[500px]">
+                <h2 className="text-2xl font-semibold mb-6">Add a new member</h2>
+                <div className="grid">
+                    <div>
+                        <label htmlFor="name" className="leading-9 block font-normal">Full Name</label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            placeholder="Enter name"
+                            className="bg-slate-100 border p-2 outline-none rounded-lg w-full"
+                            value={formik.values.name}
+                            onChange={formik.handleChange} />
+                        {formik.errors.name ? <div className="text-red-500">{formik.errors.name}</div> : null}
+                    </div>
 
-                            <div>
-                                <label htmlFor="email" className="leading-9 block font-normal">Email</label>
-                                <input
-                                    type="email"
-                                    id="email"
-                                    name="email"
-                                    placeholder="Enter email"
-                                    className="bg-slate-100 border p-2 outline-none rounded-lg w-full"
-                                    value={formik.values.email}
-                                    onChange={formik.handleChange} />
-                                {formik.errors.email ? <div className="text-red-500">{formik.errors.email}</div> : null}
-                            </div>
+                    <div>
+                        <label htmlFor="email" className="leading-9 block font-normal">Email</label>
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            placeholder="Enter email"
+                            className="bg-slate-100 border p-2 outline-none rounded-lg w-full"
+                            value={formik.values.email}
+                            onChange={formik.handleChange} />
+                        {formik.errors.email ? <div className="text-red-500">{formik.errors.email}</div> : null}
+                    </div>
+                </div>
+
+                <div className="grid sm:grid-cols-2 sm:gap-6 mb-4">
+                    <div>
+                        <label htmlFor="role" className="leading-9 block font-normal">Assign Role</label>
+                        <select
+                            name="role"
+                            id="role"
+                            className="bg-slate-100 border p-2 outline-none rounded-lg w-full"
+                            value={formik.values.role}
+                            onChange={formik.handleChange}>
+                            <option value="admin">Admin</option>
+                            <option value="editor">Editor</option>
+                            <option value="viewer">Viewer</option>
+                        </select>
+                        {formik.errors.role ? <div className="text-red-500">{formik.errors.role}</div> : null}
+                    </div>
+
+                    <div>
+                        <label htmlFor="status" className="leading-9 block font-normal">Status</label>
+                        <select
+                            name="status"
+                            id="status"
+                            className="bg-slate-100 border p-2 outline-none rounded-lg w-full"
+                            value={formik.values.status}
+                            onChange={formik.handleChange}>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                        {formik.errors.status ? <div className="text-red-500">{formik.errors.status}</div> : null}
+                    </div>
+                </div>
+
+                <label htmlFor="permissions" className="leading-9 block font-normal">Permissions</label>
+                <div className="grid grid-cols-2 gap-4 whitespace-nowrap">
+                    {['create', 'manage', 'edit', 'view', 'remove'].map(permission => (
+                        <div key={permission} className="flex items-center gap-4">
+                            <input
+                                type="checkbox"
+                                id={permission}
+                                name={`permissions.${permission}`}
+                                className="w-4 h-4"
+                                checked={formik.values.permissions[permission]}
+                                onChange={formik.handleChange}
+                            />
+                            <label htmlFor={permission}>{`${permission.charAt(0).toUpperCase() + permission.slice(1)} Posts`}</label>
                         </div>
+                    ))}
+                </div>
+                {formik.errors.permissions ? <div className="text-red-500">{formik.errors.permissions}</div> : null}
 
-                        <div className="grid sm:grid-cols-2 sm:gap-6 mb-4">
-                            <div>
-                                <label htmlFor="role" className="leading-9 block font-normal">Assign Role</label>
-                                <select
-                                    name="role"
-                                    id="role"
-                                    className="bg-slate-100 border p-2 outline-none rounded-lg w-full"
-                                    value={formik.values.role}
-                                    onChange={formik.handleChange}>
-                                    <option value="admin" onSelect={(e) => handleSelect(e.target.value)}>Admin</option>
-                                    <option value="editor" onSelect={(e) => handleSelect(e.target.value)}>Editor</option>
-                                    <option value="viewer" onSelect={(e) => handleSelect(e.target.value)}>Viewer</option>
-                                </select>
-                                {formik.errors.role ? <div className="text-red-500">{formik.errors.role}</div> : null}
-                            </div>
-
-                            <div>
-                                <label htmlFor="status" className="leading-9 block font-normal">Status</label>
-                                <select
-                                    name="status"
-                                    id="status"
-                                    className="bg-slate-100 border p-2 outline-none rounded-lg w-full"
-                                    value={formik.values.status}
-                                    onChange={formik.handleChange}>
-                                    <option value="active">Active</option>
-                                    <option value="inactive" onSelect={(e) => handleSelect(e.target.value)}>Inactive</option>
-                                </select>
-                                {formik.errors.status ? <div className="text-red-500">{formik.errors.status}</div> : null}
-                            </div>
-                        </div>
-
-                        <label htmlFor="permissions" className="leading-9 block font-normal">Permissions</label>
-                        <div className="grid grid-cols-2 gap-4 whitespace-nowrap">
-                            {['create', 'manage', 'edit', 'view', 'remove'].map(permission => (
-                                <div key={permission} className="flex items-center gap-4">
-                                    <input
-                                        type="checkbox"
-                                        id={permission}
-                                        name={`permissions.${permission}`}
-                                        className="w-4 h-4"
-                                        checked={formik.values.permissions[permission]}
-                                        onChange={formik.handleChange} />
-                                    <label htmlFor={permission}>{`${permission.charAt(0).toUpperCase() + permission.slice(1)} Posts`}</label>
-                                </div>
-                            ))}
-                        </div>
-                        {formik.errors.permissions ? <div className="text-red-500">{formik.errors.permissions}</div> : null}
-
-                        <div className="grid sm:grid-cols-2 sm:gap-6 mt-6">
-                            <button
-                                type="submit"
-                                className="py-2 cursor-pointer bg-indigo-500 text-white hover:bg-indigo-600 border border-indigo-500 rounded-lg my-1 transition-all">
-                                Add
-                            </button>
-                            <button
-                                type="reset"
-                                className="py-2 cursor-pointer bg-white text-indigo-500 hover:bg-indigo-100 border border-indigo-500 rounded-lg my-1 transition-all"
-                                onClick={() => toggleModal(false)}>
-                                Cancel
-                            </button>
-                        </div>
-                    </form>
-                </Box>
-            </Modal>
+                <div className="grid sm:grid-cols-2 sm:gap-6 mt-6">
+                    <button
+                        type="submit"
+                        className="py-2 cursor-pointer bg-indigo-500 text-white hover:bg-indigo-600 border border-indigo-500 rounded-lg my-1 transition-all">
+                        Add
+                    </button>
+                    <button
+                        type="reset"
+                        className="py-2 cursor-pointer bg-white text-indigo-500 hover:bg-indigo-100 border border-indigo-500 rounded-lg my-1 transition-all"
+                        onClick={() => toggleModal(false)}>
+                        Cancel
+                    </button>
+                </div>
+            </form>
         </div>
     );
 }
+
