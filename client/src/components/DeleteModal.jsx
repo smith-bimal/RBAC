@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
+import apiRequest from '../lib/apiRequest';
 
 const style = {
     position: 'absolute',
@@ -18,6 +19,16 @@ const style = {
 
 export default function DeleteModal({ modalOpen, setModalOpen, deleteMember }) {
     const handleClose = () => setModalOpen(false);
+    const handleDelete = () => {
+        apiRequest.delete(`members/${deleteMember.email}`)
+            .then(res => {
+                console.log(res);
+            }).catch(err => {
+                console.log(err);
+            }).finally(() => {
+                setModalOpen(false);
+            });
+    };
 
     return (
         <div>
@@ -31,7 +42,7 @@ export default function DeleteModal({ modalOpen, setModalOpen, deleteMember }) {
                     <Typography id="modal-modal-description">
                         Are you sure you want to delete this member?
                     </Typography>
-                    <Button variant="contained" sx={{mt:6, float:'right', bgcolor:'#EF4444', borderRadius:'0.5rem'}} onClick={()=>console.log(deleteMember)}>
+                    <Button variant="contained" sx={{ mt: 6, float: 'right', bgcolor: '#EF4444', borderRadius: '0.5rem' }} onClick={handleDelete}>
                         Delete
                     </Button>
                 </Box>

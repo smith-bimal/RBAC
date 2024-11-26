@@ -15,8 +15,7 @@ const FilterSearch = ({ members, setFilteredMembers, filteredMembers, itemsPerPa
     };
 
     const parseDate = (dateStr) => {
-        const [day, month, year] = dateStr.split('-');
-        return new Date(`${year}-${month}-${day}`);
+        return new Date(dateStr.split('T')[0]);
     };
 
     const sortNewtoOld = () => {
@@ -66,7 +65,7 @@ const FilterSearch = ({ members, setFilteredMembers, filteredMembers, itemsPerPa
 
                 <select
                     className="bg-slate-200 px-4 py-2 outline-none rounded-lg font-semibold text-slate-500"
-                    defaultValue="3"
+                    defaultValue="4"
                     onChange={handleSortChange}
                 >
                     <option value="1">A-Z</option>

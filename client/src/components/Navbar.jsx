@@ -1,7 +1,22 @@
 import { useState } from "react"
+import { useNavigate } from "react-router";
+import apiRequest from "../lib/apiRequest";
 
 const Navbar = () => {
     const [showDropdown, setShowDropdown] = useState(false);
+    const navigate = useNavigate();
+    const handleSignOut = () => {
+        apiRequest.post("signout")
+            .then(() => {
+                setShowDropdown(false);
+                localStorage.removeItem();
+            }).catch(err => {
+                console.log(err);
+            }).finally(() => {
+                navigate("/");
+            })
+        console.log("Handle Sign Out");
+    }
 
     return (
         <div className="px-12 py-4 flex items-center justify-between shadow-md">
@@ -28,7 +43,7 @@ const Navbar = () => {
                         <i className="ri-arrow-down-s-fill text-indigo-500"></i>
                     </div>
                     {showDropdown &&
-                        <div className="absolute px-4 py-2 whitespace-nowrap text-base text-red-500 font-semibold top-14 right-0 rounded-lg border bg-white cursor-pointer">
+                        <div className="absolute px-4 py-2 whitespace-nowrap text-base text-red-500 font-semibold top-14 right-0 rounded-lg border bg-white cursor-pointer" onClick={handleSignOut}>
                             <p><i className="ri-logout-circle-r-line mr-2"></i>Sign Out</p>
                         </div>
                     }
