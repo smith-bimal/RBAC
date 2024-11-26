@@ -42,7 +42,7 @@ app.use(
 );
 
 app.get("/", (req, res) => {
-    res.send("Homepage");
+    res.send("Server Page");
 });
 
 app.use("/api/auth", authRoutes);
